@@ -1,18 +1,27 @@
-CREATE PROCEDURE dbo.Refresh_Orders
+CREATE PROCEDURE dbo.UpdateOrders
 
 AS
 BEGIN
 
 SET NOCOUNT ON;
 
-INSERT INTO DW_BikeStore.dbo.D_orders
-(order_id, order_date)
+INSERT INTO DW_BikeStore2.dbo.D_orders
+(order_id, order_date, store_id)
 
-SELECT order_id, order_date FROM BikeStores.sales.orders
+SELECT order_id, order_date, store_id FROM BikeStores.sales.orders
 
 
 END
 
+GO
+
+SET IDENTITY_INSERT D_orders ON;
+GO
+
+DELETE FROM DW_BikeStore2.dbo.H_venta;
+
+EXECUTE dbo.UpdateOrders
+SELECT * FROM DW_BikeStore2.dbo.H_venta; 
 GO
 
 CREATE PROCEDURE dbo.Refresh_Products
