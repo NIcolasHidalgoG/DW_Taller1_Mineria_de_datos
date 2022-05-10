@@ -8,10 +8,12 @@ SET NOCOUNT ON;
 
 INSERT INTO DW_BikeStore2.dbo.D_orders (order_id, order_date, store_id)
 SELECT order_id, order_date, store_id FROM BikeStores.sales.orders
-	WHERE YEAR(order_date) = '2016' or YEAR(order_date) = '2017'
 END
 
+
 GO
+SET IDENTITY_INSERT D_orders ON;
+SET IDENTITY_INSERT D_orders OFF;
 EXECUTE dbo.Refresh_Orders
 
 GO
@@ -30,7 +32,9 @@ SELECT product_id, product_name, list_price, category_name FROM BikeStores.produ
 END
 
 GO
-EXECUTE dbo.Refresh_Orders
+SET IDENTITY_INSERT D_products ON;
+SET IDENTITY_INSERT D_products OFF;
+EXECUTE dbo.Refresh_Products
 
 GO
 
@@ -49,6 +53,10 @@ SELECT store_name, city, street, state FROM BikeStores.sales.stores
 END
 
 GO
+SET IDENTITY_INSERT D_store ON;
+SET IDENTITY_INSERT D_store OFF;
+EXECUTE dbo.Refresh_Store
+GO
 
 /*Procedimiento para llenar tabla de hechos dbo.H_venta*/
 CREATE PROCEDURE dbo.Refresh_ventas
@@ -57,7 +65,12 @@ AS
 BEGIN
 
 INSERT INTO dbo.H_venta (order_id, product_id, store_id, quantity, discount)
-SELECT soi.order_id, product_id, store_id, quantity, discount FROM BikeStores.sales.orders so LEFT OUTER JOIN BikeStores.sales.order_items soi ON so.order_id = soi.order_id;
+SELECT soi.order_id, product_id, store_id, quantity, discount FROM BikeStores.sales.orders so LEFT OUTER JOIN BikeStores.sales.order_items soi ON soi.order_id = so.order_id;
 
 END
+
+GO
+SET IDENTITY_INSERT H_venta ON;
+SET IDENTITY_INSERT H_venta OFF;
+EXECUTE dbo.Refresh_ventas
 
